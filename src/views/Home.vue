@@ -127,13 +127,21 @@ export default {
       }
     },
     async loginGET() {
-      await api.get("/irs/login");
+      try {
+        await api.get("/irs/login");
+      } catch (e) {
+        return;
+      }
     },
     async loginPOST() {
       let bodyFormData = new FormData();
       bodyFormData.append("email", "t108820039@ntut.edu.tw");
       bodyFormData.append("password", "123");
-      await api.post("/irs/submitLogin", bodyFormData);
+      try {
+        await api.post("/irs/submitLogin", bodyFormData);
+      } catch (e) {
+        return;
+      }
     },
     async attackPOST(i) {
       let answers = [
@@ -152,7 +160,11 @@ export default {
         },
         dataType: "json"
       };
-      await $.ajax(my_data);
+      try {
+        await $.ajax(my_data);
+      } catch (e) {
+        return;
+      }
     }
   }
 };
