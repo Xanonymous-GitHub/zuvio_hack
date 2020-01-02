@@ -40,10 +40,10 @@
 
 <script>
 // @ is an alias to /src
-const mainImage = ()=>import("@/components/mainImage");
+const mainImage = () => import("@/components/mainImage");
 export default {
   name: "home",
-  components:{
+  components: {
     mainImage
   }
 };
