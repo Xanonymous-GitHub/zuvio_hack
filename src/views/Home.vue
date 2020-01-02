@@ -41,6 +41,7 @@
               v-if="!verified"
               dark
               depressed
+              :disabled="!password"
               @click="verifiedNow"
               class="deep-purple accent-4"
               ><v-icon>mdi-card-search</v-icon><b>驗證攻擊碼</b></v-btn
